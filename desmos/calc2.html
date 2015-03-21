@@ -1,0 +1,27 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Desmos demo</title>
+  <script src="../lodash.js"></script>
+  <script src="calculator.js"></script>
+</head>
+<body>
+  <div id="calculator" style="width: 800px; height: 400px;"></div>
+  <p></p>
+  <button id="latexbutton">Visa LaTeX</button>
+
+  <script>
+    var calculator = Desmos.Calculator(document.getElementById('calculator'));
+
+    console.log(calculator.getState());
+
+    document.getElementById("latexbutton").addEventListener("click",function(e){
+      alert(_.reduce(calculator.getState().expressions.list,function(str,o,n){
+        return str + (n+1) + ": " + o.latex + "\n";
+      },""));
+    });
+  </script>
+
+</body>
+</html>

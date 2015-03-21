@@ -1,0 +1,41 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Desmos demo</title>
+  <script src="../lodash.js"></script>
+  <script type="text/javascript" src="tolk.js"></script>
+  <style type="text/css">
+  pre {
+     background-color: ghostwhite;
+     border: 1px solid silver;
+     padding: 10px 20px;
+     margin: 20px; 
+     }
+  .json-key {
+     color: brown;
+     }
+  .json-value {
+     color: navy;
+     }
+  .json-string {
+     color: olive;
+     }
+  </style>
+</head>
+<body>
+  <input type="text" id="field"></input>
+  <button id="button">Tolka</button>
+  <pre><code id="result"></code></pre>
+  <script>
+    document.getElementById("button").addEventListener("click",function(e){
+      var txt = document.getElementById("field").value,
+        data = CATS.app.parseExpression(txt);
+      console.log(data);
+      document.getElementById("result").innerHTML = print.prettyPrint(data);
+    });
+  </script>
+
+</body>
+</html>
+

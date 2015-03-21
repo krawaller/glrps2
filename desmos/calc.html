@@ -1,0 +1,29 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Desmos demo</title>
+  <script src="../lodash.js"></script>
+  <script src="calculator.js"></script>
+</head>
+<body>
+  <div id="calculator" style="width: 1200px; height: 600px;"></div>
+  <button id="share">Share</button>
+
+  <script>
+    var elt = document.getElementById('calculator');
+    var calculator = Desmos.Calculator(elt), jsonlist = JSON.parse(decodeURIComponent(window.location.search.substr(3)));
+
+    calculator.setExpressions(jsonlist);
+
+    console.log(calculator.getState());
+
+    document.getElementById("share").addEventListener("click",function(e){
+    	var str = JSON.stringify(calculator.getState().expressions.list);
+    	console.log(str);
+    	window.location.href = window.location.pathname + "?l="+encodeURIComponent(str);
+    });
+  </script>
+
+</body>
+</html>
