@@ -32,15 +32,13 @@
 
 
 
-<h2 id="problemnedbrytning">Problemnedbrytning</h2>
-
 <h3 id="ritautmatematik">Rita ut matematik</h3>
 
 <p>Vi måste kunna rita ut matematiska uttryck på skärmen. Ni använder redan <a href="http://mathjax.com">MathJax</a>, vilket jag är tämligen övertygad om är den bästa lösningen. Den stödjer både MathML och LaTeX (som både in- och utdata), vilket gör den kompatibel med så gott som alla andra bibliotek man skulle kunna tänkas vilja blanda in.</p>
 
 <p>Nackdelen är möjligen att MathJax-paketet är ganska stort, men jag tror inte man ska fästa alltför stor vikt vid det. Jag använder själv MathJax i mobillösningen för <a href="http://www.algebraexplorer.com">Algebra Explorer</a> och har inte upplevt att dess vikt är ett problem.</p>
 
-<p>Ett möjligt alternativ skulle vara att använda MathQuill för att rita ut matematiken, frestande om man ändå använder MathQuill för sin editor. Den är dock inte lika fullfjädrad som MathJax.</p>
+<p>Ett möjligt alternativ skulle vara att använda MathQuill för att rita ut matematiken, frestande om man ändå använder MathQuill för sin editor. Den är dock inte lika fullfjädrad som MathJax, och MathQuill rekommenderar själva MathJax.</p>
 
 <h3 id="indatafrnanvndaren">Indata från användaren</h3>
 
@@ -75,9 +73,7 @@
 
 <p>Denna datastruktur är vad min interna CAS-motor använder. När resultatet sedan skall renderas på skärmen så har jag en omvandlare från denna struktur till MathML.</p>
 
-<h3 id="helalsningar">Hela lösningar</h3>
-
-<h4 id="desmos">Desmos</h4>
+<h3 id="desmos">Desmos</h3>
 
 <p>Desmos har ett <a href="https://www.desmos.com/api/v0.4/docs/">öppet API</a> avsett just för att integrera det i en befintlig lösning. Det är byggd för att ladda från deras server med en API-nyckel, men det är ganska lätt att tjuvkoppla den för att testa runt lokalt (som jag gjort här).</p>
 
@@ -103,15 +99,22 @@
 
 <p>På dylikt manér kan man implementera en historik, delningsfunktionalitet och koppling mot plattformen i övrigt.</p>
 
-<h4 id="symbolab">Symbolab</h4>
+<p>Flöden åt andra hållet implementeras via <code>calculator.setExpression</code>. För att demonstrera detta skapade jag den andra knappen, som lägger till ett bråk i listan genom följande kod:</p>
 
-<p>Möjligen skulle <a href="https://www.symbolab.com/">Symbolab</a> kunna vara intressanta att prata med. De har MathQuillinmatning, CAS-motor med förenkling steg för steg, samt grafritande. Med andra ord ligger de nära det du visualiserar.</p>
+<pre><code class="javascript">document.getElementById(&quot;fracbutton&quot;).addEventListener(&quot;click&quot;,function(e){
+  calculator.setExpression({
+    id: Math.random(),
+    latex: &quot;\\frac{&quot;+(Math.floor(Math.random()*10))+&quot;}{&quot;+(2+Math.floor(Math.random()*10))+&quot;}&quot;
+  });
+});</code></pre>
 
-<h4 id="math42">Math 42</h4>
+<h3 id="math42">Math 42</h3>
 
 <p>De som bygger appen <a href="http://math-42.com/">Math 42</a> jobbar också på ett webbgränssnitt med samma funktionalitet. Tyvärr har jag skrivit på ett NDA så jag kan inte visa, men funktionaliteten motsvarar <a href="http://math-42.com/features/">appens</a>; smart inmatning, CAS och grafer. Sist jag pratade med dem så var fokus på att bygga en egen webbtjänst och inte att erbjuda ett bibliotek, men de sneglade även åt det hållet.</p>
 
-<h4 id="mathnotepad">Math Notepad</h4>
+<p>Så potentiellt en bra danspartner! Jag hade lite kontakt med dem senast i somras i samband med att jag färdigställde Algebra Explorer, som ju ligger ganska nära deras lösning. </p>
+
+<h3 id="mathnotepad">Math Notepad</h3>
 
 <p>Ett projekt som jag sneglat lite på är <a href="http://mathnotepad.com/">Math Notepad</a>, som är ett grafiskt gränssnitt byggt på <a href="http://mathjs.org/">Math.js</a>. De använder inga hjälpmedel för vare sig indata eller rendering av matematik; användaren matar in &#8220;ren&#8221; text.</p>
 
@@ -130,6 +133,56 @@
 <p>Testa funktionaliteten i math.js-biblioteket i demoappen nedan:</p>
 
 <p><iframe src="math/index.html" height=300 width=800></iframe></p>
+
+<h3 id="symbolab">Symbolab</h3>
+
+<p>Möjligen skulle <a href="https://www.symbolab.com/">Symbolab</a> kunna vara intressanta att prata med. De har MathQuillinmatning, CAS-motor med förenkling steg för steg, samt grafritande. Med andra ord ligger de nära det du visualiserar.</p>
+
+<p>Å andra sidan så anropar de sin server för varje beräkning (i samma stil som Wolfram Alpha), och idealet vore ju en lösning som kan bo helt på klientsidan och därmed fungera offline (och på mobila enheter).</p>
+
+<h3 id="geogebraweb">Geogebra Web</h3>
+
+<p>Det är också frestande att göra som <a href="skoledu.dk">skoledu.dk</a> och dina tyska vänner, och köra på en fullödig Geogebra-lösning. Precis som de förmodligen berättade så är det dock ett antal klyftor att överbrygga, framför allt om du vill använda den som räknar- och CAS-motor. Funktionaliteten finns där, men är inte avsedd att exponeras på det sättet.</p>
+
+<p>Är den investeringen väl gjord så skulle dock lösningen kunna bli mer eller mindre självförsörjande. Det vore intressant att titta närmare på skoledu.dk!</p>
+
+<h3 id="javascriptcas">JavaScript CAS</h3>
+
+<p>Letar man efter JavaScript-lösningar för CAS (vilket det finns förvånansvärt lite av) så kommer man snubbla över <a href="https://github.com/aantthony/javascript-cas">JavaScript</a>. Omfattande funktionalitet, men övergivet sedan några år, och inte så förtroendeingivande när man tjuvkikar på kod. Rekommenderas ej.</p>
+
+<h3 id="grundlggandearitmetikijavascript">Grundläggande aritmetik i JavaScript</h3>
+
+<p>Om ni väljer att själva implementera den grundläggande aritmetikdelen av räknaren (vilket inte rekommenderas), så måste hänsyn tas till JavaScripts gestaltning av tal. Denna innebär att vissa aritmetiska operationer inte blir korrekta. Decimala operationer är inte pålitliga:</p>
+
+<figure>
+<img src="decerror.png" alt="decimalknas" />
+<figcaption>decimalknas</figcaption></figure>
+
+
+
+<p>Även för större heltal så uppstår &#8220;tysta fel&#8221;, där JavaScript utan att protestera förvränger indatan:</p>
+
+<figure>
+<img src="bignumerror.png" alt="förvrängda stora tal" />
+<figcaption>förvrängda stora tal</figcaption></figure>
+
+
+
+<p>Det vedertagna namnet för bibliotek som hanterar detta är &#8220;Big Number&#8221; (även om de hanterar decimaltal också), och en sökning på detta i NPM ger <a href="https://www.npmjs.com/search?q=big+number">en uppsjö av resultat</a>. Samtliga med många nedladdningar är pålitliga, jag valde i slutändan <a href="https://www.npmjs.com/package/bn.js">BN</a> för Algebra Explorer.</p>
+
+<h3 id="kardemummasumman">Kardemummasumman</h3>
+
+<p>Även om vi inte ens börjat få mer fastare konturer kring slutresultatet så kan några iakttagelser göras:</p>
+
+<ul>
+<li>Sannolikt är det lämpligt att använda MathQuill som indatahantering, antingen fristående eller som en del av en tyngre lösning som Desmos</li>
+<li>Motorn som skall förenkla och CAS:a bör därmed klara av att ta emot LaTeX.</li>
+<li>Därmed blir det lämpligt att också motorn också spottar ut LaTeX i andra änden för utritning, då MathJax stödjer detta. Notera dock att oavsett lösning så görs någon sorts omvandling till ett annat format inne i mattemotorn, så det behöver inte bli något merarbete att istället få ut exempelvis MathML istället, eftersom en omvandling alltid äger rum. MathML har fördelen att den kan <a href="http://caniuse.com/#feat=mathml">ritas natively i vissa webbläsare</a> (inklusive Safari iOS, vilket fick mig att välja det till Algebra Explorer).</li>
+</ul>
+
+<h3 id="filosoferande">Filosoferande</h3>
+
+<p>Jag har haft ytterligare några sittningar med kärntruppen av IKT:iga mattelärare i gänget apropå din frågeställning om vad man egentligen vill. Vilket är sjukt svårt! Jag har fortfarande inga bra svar. Det känns långt ifrån självklart att det för mig som konsument är smidigast att ha en helhetslösning i läromedlet, utan snarare vill jag kunna sätta ihop min egen verktygslåda. Samtidigt är det såklart frestande från producenthåll att erbjuda en helhetslösning. Knepigt!</p>
 
 
 

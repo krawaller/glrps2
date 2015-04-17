@@ -147,4 +147,4 @@ Det vedertagna namnet för bibliotek som hanterar detta är "Big Number" (även 
 
 ### Filosoferande
 
-Jag har haft ytterligare några sittningar med kärntruppen av IKT:iga mattelärare i gänget apropå din frågeställning om vad man egentligen vill. Jag har fortfarande inga bra svar, men står fast vid att det inte är självklart att bygga in 
+Jag har haft ytterligare några sittningar med kärntruppen av IKT:iga mattelärare i gänget apropå din frågeställning om vad man egentligen vill. Vilket är sjukt svårt! Jag har fortfarande inga bra svar. Det känns långt ifrån självklart att det för mig som konsument är smidigast att ha en helhetslösning i läromedlet, utan snarare vill jag kunna sätta ihop min egen verktygslåda. Samtidigt är det såklart frestande från producenthåll att erbjuda en helhetslösning. Knepigt!
