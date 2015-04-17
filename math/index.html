@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>math.js demo</title>
+  <script type="text/javascript" src="es5.js"></script>
+  <script type="text/javascript" src="math.js"></script>
+  <script type="text/javascript" src="commandline.js"></script>
+  <style type="text/css">
+
+body {
+  background: #f5f5f5 url('img/bright_squares_interlaced.png') repeat;
+  height: 100%;
+  width: 100%;
+  max-width: 100%;
+  padding: 0;
+  margin: 0;
+
+  font-family: "DejaVu Sans", Verdana, Arial, sans-serif;
+  font-weight: normal;
+  font-size: 10pt;
+  line-height: 1.8;
+  color: #363636;
+}
+
+#page {
+  position: relative;
+  width: 700px;
+  min-height: 700px;
+  margin: 20px auto 0 auto;
+  background-color: white;
+  padding: 40px 50px;
+  border: 1px solid lightgray;
+  border-radius: 3px;
+  overflow: hidden;
+
+  box-shadow: 2px 2px 10px rgba(128, 128, 128, 0.2);
+}
+
+#page.small {
+  width: auto;
+  margin: 5px 5px 0 5px;
+  padding: 4%;
+}
+
+#search {
+  position: absolute;
+  top: 20px;
+  right: 40px;
+  width: 300px;
+}
+
+#search .gsib_a {
+  padding: 2px 6px;
+}
+
+.small #search {
+  right: 4%;
+}
+
+.tiny #search {
+  position: static;
+  width: 100%;
+}
+
+.gsc-result .gs-title {
+  height: 1.4em !important;
+}
+
+.gsc-search-button .gsc-search-button {
+  vertical-align: middle;
+  margin: 0;
+}
+
+#logo {
+  width: 330px;
+  height: 100px;
+}
+
+.small #logo {
+  width: 220px;
+  height: 67px;
+}
+
+.tiny #logo {
+  width: 165px;
+  height: 50px;
+}
+
+#menu {
+  background: #5f5f5f;
+  margin: 40px -50px;
+  padding: 0 50px;
+  text-transform: uppercase;
+  box-shadow: 0 0 15px #d6d6d6;
+}
+
+#menu a {
+  color: white;
+  height: 100%;
+  display: inline-block;
+  border-right: 2px solid #f5f5f5;
+  font-weight: bold;
+  padding: 10px 18px;
+  margin: 0;
+  position: relative;
+  text-decoration: none;
+
+  -webkit-transition: background .2s ease;
+  transition:         background .2s ease;
+}
+
+#menu a:first-child {
+  border-left: 2px solid #f5f5f5;
+}
+
+#menu a:hover {
+  background: #808080;
+}
+
+#menu a div.selection {
+  position: absolute;
+  bottom: -7px;
+  left: 0;
+  height: 5px;
+  width: 100%;
+  background: #dc3912;
+}
+
+#page.small #menu {
+  margin: 40px -4%;
+  padding: 0 4%;
+}
+
+#page.tiny #menu {
+  margin: 0;
+  padding: 0;
+}
+
+#page.tiny #menu a {
+  display: block;
+  border-right: none;
+  border-bottom: 2px solid #f5f5f5;
+}
+
+#page.tiny #menu a div.selection {
+  left: -7px;
+  top: 0;
+  height: 100%;
+  width: 5px;
+}
+
+
+#likes {
+  min-height: 42px;
+  margin: 60px 0 20px 0;
+  padding: 0;
+  overflow: visible;
+}
+
+div.like {
+  float: left;
+  width: 120px;
+  max-width: 100%;
+  height: 42px;
+}
+
+#footer {
+  color: #b4b4b4;
+  text-align: center;
+  margin: 5px auto 30px auto;
+}
+
+div.cols {
+  padding: 0;
+  margin: 0;
+}
+
+.small div.cols {
+  width: 100%;
+}
+
+div.cols .left {
+  float: left;
+  width: 47%;
+}
+
+div.cols .right {
+  float: right;
+  width: 47%;
+}
+
+.small div.cols .left,
+.small div.cols .right {
+  width: 100%;
+}
+
+
+div.cols .end {
+  clear: both;
+  height: 0;
+  overflow: hidden;
+}
+
+#content table {
+  border-collapse: collapse;
+  margin: 15px 0;
+}
+
+#content table th,
+#content table td {
+  border: 1px solid #ddd;
+  padding: 6px 13px;
+}
+
+#content table tr:nth-child(2n) {
+  background-color: #f8f8f8;
+}
+
+#content table.download tr {
+  background-color: transparent;
+}
+
+#content table.download td,
+#content table.download th {
+  border: none;
+  padding: 5px 20px 5px 0;
+}
+
+pre {
+  overflow: auto;
+}
+
+code {
+  padding: 0.2em;
+  margin: 0;
+  font-size: 90%;
+  background-color: rgba(0,0,0,0.04);
+  border-radius: 3px;
+}
+
+pre code {
+  margin: inherit;
+  border: none;
+  font-size: 100%;
+  background-color: transparent;
+  border-radius: inherit;
+  padding: inherit;
+}
+
+#commandline {
+  width: 100%;
+  height: 300px;
+}
+
+.tips {
+  color: #b4b4b4;
+  margin: 10px 0;
+}
+.tips ul {
+  margin: 0;
+}
+
+h1, h2 {
+  font-size: 120%;
+  margin-top: 20px;
+}
+
+h3, h4 {
+  font-size: 100%;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  position: relative;
+  padding-left: 30px;
+  margin-left: -30px;
+}
+
+h1 a,
+h2 a,
+h3 a,
+h4 a,
+h5 a,
+h6 a {
+  position: absolute;
+  width: 30px;
+  left: 0;
+  top: 0;
+  display: inline-block;
+  text-align: center;
+  visibility: hidden;
+  text-decoration: none;
+}
+
+.small h1 a,
+.small h2 a,
+.small h3 a,
+.small h4 a,
+.small h5 a,
+.small h6 a {
+  position: relative;
+}
+
+h1:hover a,
+h2:hover a,
+h3:hover a,
+h4:hover a,
+h5:hover a,
+h6:hover a {
+  visibility: visible;
+}
+
+h1 a:hover,
+h2 a:hover,
+h3 a:hover,
+h4 a:hover,
+h5 a:hover,
+h6 a:hover {
+  text-decoration: underline;
+}
+
+#content ul {
+  list-style-type: square;
+}
+
+#content img {
+  border: none;
+}
+
+#content a {
+  color: #dc3912;
+}
+
+#content a:visited {
+  color: #b82e12;
+}
+
+#content a:hover {
+  color: #f43f14;
+}
+
+#footer a {
+  color: #b4b4b4;
+  text-decoration: none;
+}
+
+#footer a:hover {
+  color: #dc3912;
+}
+
+#forkme {
+  position: absolute;
+  text-align: right;
+  top: 0;
+  right: 0;
+  border: 0;
+}
+
+#forkme.small {
+  display: none;
+}
+
+
+.cle .input,
+.cle .results .expr,
+.cle .results .res {
+  font-family: monospace;
+  font-size: 12px;
+  color: #363636;
+}
+
+.cle {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 3px;
+
+  border: 1px solid #e5e5e5;
+  background-color: #f5f5f5;
+  border-radius: 2px;
+
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+}
+
+.cle.fullscreen {
+  position: fixed;
+  left: 0;
+  top: 0;
+  height: 100%;
+  z-index: 999;
+}
+
+.cle .top-panel {
+  width: 100%;
+  height: 100%;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  margin: 0 0 -30px 0;
+  padding: 0 0 30px 0;
+}
+
+.cle .bottom-panel {
+  position: relative;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  width: 100%;
+  height: 30px;
+}
+
+.cle button.fullscreen {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 16px;
+  height: 16px;
+  z-index: 1;
+
+  border: none;
+  cursor: pointer;
+  background: url('img/fullscreen.png');
+}
+
+.cle button.fullscreen:hover {
+  opacity: 0.5;
+  filter: alpha(opacity=50); /* For IE8 and earlier */
+}
+
+.cle.fullscreen button.fullscreen {
+  background: url('img/fullscreen_exit.png');
+}
+
+.cle .results {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: auto;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  padding: 4px;
+
+  border: 1px solid #e5e5e5;
+  background-color: white;
+  box-shadow: inset 2px 2px 5px rgba(192, 192, 192, 0.1);
+  line-height: 1.5;
+}
+
+.cle .results .expr {
+  padding: 0;
+  margin: 0;
+}
+
+.cle .results .res {
+  padding: 0;
+  margin: 0 0 5px 30px;
+  color: #dc3912;
+}
+
+.cle .results .expr,
+.cle .results .res {
+  background: none;
+  border: none;
+
+  /* http://css-tricks.com/snippets/css/make-pre-text-wrap/ */
+  white-space: pre-wrap;       /* css-3 */
+  white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+  white-space: -pre-wrap;      /* Opera 4-6 */
+  white-space: -o-pre-wrap;    /* Opera 7 */
+  word-wrap: break-word;       /* Internet Explorer 5.5+ */
+}
+
+.cle .input-left {
+  width: 100%;
+  height: 100%;
+  margin: 0 -80px 0 0;
+  padding: 0 80px 4px 0;
+  float: left;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+.cle .input-right {
+  width: 80px;
+  height: 100%;
+  margin: 0;
+  padding: 0 0 4px 4px;
+  float: right;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+.cle .input {
+  width: 100%;
+  height: 100%;
+  margin: 4px 0 0 0;
+  padding: 2px 4px;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+
+  border: 1px solid #e5e5e5;
+  background-color: white;
+  box-shadow: inset 2px 2px 5px rgba(192, 192, 192, 0.1);
+}
+
+.cle button.eval {
+  color: #363636;
+  width: 100%;
+  height: 100%;
+  margin: 4px 0;
+  padding: 0;
+}
+
+.highlight pre {
+  background-color: #fcfcfc;
+  border: 1px solid #ddd;
+  line-height: 1.5em;
+  padding: 5px;
+  border-radius: 2px;
+  font-size: 12px;
+}
+
+.highlight pre code {
+  padding: 0;
+}
+
+.highlight .c,
+.highlight .c1,
+.highlight .cm {
+  color: #808080;
+}
+
+.highlight .kd ,
+.highlight .nt {
+  color: #004ED0;
+  color: #2B7CE9;
+}
+
+.highlight .m,
+.highlight .mi,
+.highlight .mf {
+  color: #dc3912;
+}
+
+.highlight .s {
+  color: #008000;
+}
+
+.highlight .cp,
+.highlight .n,
+.highlight .na,
+.highlight .s1 {
+  color: #ffa500;
+}
+
+.highlight .kc {
+  color: #990099;
+}
+
+</style>
+
+</head>
+<body>
+
+<div id="commandline">loading...</div>
+<script type="text/javascript">
+  var editor = new CommandLineEditor({
+      container: document.getElementById('commandline'),
+      math: math
+  });
+</script>
+
+</body>
+</html>

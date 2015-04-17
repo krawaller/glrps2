@@ -1,0 +1,136 @@
+<html><head>
+ <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+ <title>Kartläggning</title>
+</head><body>
+<style type="text/css">
+ h1,h2,h3,h4,h5 {
+ margin-top: 3em;
+ margin-left: 2em;
+ }
+ #wrapper {
+ position: relative;
+ max-width: 750px;
+ margin: 2em auto;
+ }
+ img {
+ display: block;
+ margin: 2em auto;
+ max-width: 90%;
+ border: 1px solid #CCC;
+ box-shadow: 10px 10px 5px #888;
+ }
+ body {
+ font-family: &#8220;Helvetica Neue&#8221;, Helvetica, Arial, sans-serif;
+ font-size: 14px;
+ line-height: 20px;
+ color: #333333;
+ }
+
+</style>
+<div id="wrapper">
+
+
+
+
+<h2 id="problemnedbrytning">Problemnedbrytning</h2>
+
+<h3 id="ritautmatematik">Rita ut matematik</h3>
+
+<p>Vi måste kunna rita ut matematiska uttryck på skärmen. Ni använder redan <a href="http://mathjax.com">MathJax</a>, vilket jag är tämligen övertygad om är den bästa lösningen. Den stödjer både MathML och LaTeX (som både in- och utdata), vilket gör den kompatibel med så gott som alla andra bibliotek man skulle kunna tänkas vilja blanda in.</p>
+
+<p>Nackdelen är möjligen att MathJax-paketet är ganska stort, men jag tror inte man ska fästa alltför stor vikt vid det. Jag använder själv MathJax i mobillösningen för <a href="http://www.algebraexplorer.com">Algebra Explorer</a> och har inte upplevt att dess vikt är ett problem.</p>
+
+<p>Ett möjligt alternativ skulle vara att använda MathQuill för att rita ut matematiken, frestande om man ändå använder MathQuill för sin editor. Den är dock inte lika fullfjädrad som MathJax.</p>
+
+<h3 id="indatafrnanvndaren">Indata från användaren</h3>
+
+<p>Ett delikat problem! Här finns det många vägar att gå, och vilken väg man väljer påverkas mycket av vad nyttjade bibliotek nedströms vill ha. MathQuill är dock den överlägset största spelaren. Används av E-Math, Desmos, Mathspace, etc. Dessutom gediget byggt under motorhuven (jag har varit där och <a href="https://github.com/mathquill/mathquill/pull/191">rotat lite</a>). </p>
+
+<p>Notera att det inte är självklart att ha ett gränssnitt där vi hanterar bråk, potenser etc redan i inmatningsfältet. Exempelvis valde jag i Algebra Explorer att ha en lösning där användaren skriver ren text, men får i realtid en rendering och en beskrivning av uttrycket:</p>
+
+<figure>
+<img src="alex.png" alt="" /></figure>
+
+
+
+<p>Detta kombinerar jag med att också exponera uttryckets trädstruktur via en närbildsfunktion.</p>
+
+<figure>
+<img src="alextree.png" alt="trädstruktur" />
+<figcaption>trädstruktur</figcaption></figure>
+
+
+
+<p>Erfarenheten hittills är dock att det är få elever som har glädje av denna abstrakta gestaltning.</p>
+
+<p>Trädstrukturen berör ett av de stora nedströmsproblemen; om vi inte bara vill rita ut det som skrevs in utan på något sätt behandla uttrycket - förenkla, rita ut, etc - då MÅSTE vi någonstans ha ett dataträd över de ingående noderna i uttrycket. Detta behöver nödvändigtvis inte ligga i inmatningsdelen; den skulle kunna spotta ur sig LaTeX eller dylikt, som nästa bibliotek sedan trädtolkar. NÅGON måste göra det jobbet. </p>
+
+<p>Här är en litet demo där jag lyft ut min hemmabyggda tolkare:</p>
+
+<p><iframe width=600 height=250 src='tolk/index.html'></iframe></p>
+
+<p>Som synes spottar den ur sig ett egetpåhittat format där varje objekt har ett <code>type</code>-attribut, eventuella barn finns listade under <code>objs</code>, och lövens värde finns i <code>val</code>. </p>
+
+<p>Man ser också värdena <code>used</code> och <code>rest</code>, som är arbetsvariabler när texten skall tolkas.</p>
+
+<p>Denna datastruktur är vad min interna CAS-motor använder. När resultatet sedan skall renderas på skärmen så har jag en omvandlare från denna struktur till MathML.</p>
+
+<h3 id="helalsningar">Hela lösningar</h3>
+
+<h4 id="desmos">Desmos</h4>
+
+<p>Desmos har ett <a href="https://www.desmos.com/api/v0.4/docs/">öppet API</a> avsett just för att integrera det i en befintlig lösning. Det är byggd för att ladda från deras server med en API-nyckel, men det är ganska lätt att tjuvkoppla den för att testa runt lokalt (som jag gjort här).</p>
+
+<p><iframe width=800 height=450 src='desmos/calc2.html'></iframe></p>
+
+<p>Förutsatt att vårt html-dokument innehåller följande element&#8230;</p>
+
+<pre><code class="html">&lt;div id=&quot;calculator&quot; style=&quot;width: 800px; height: 400px;&quot;&gt;&lt;/div&gt;</code></pre>
+
+<p>&#8230;så kan vi instantiera en räknare genom följande triviala kod:</p>
+
+<pre><code class="javascript">var calculator = Desmos.Calculator(document.getElementById(&apos;calculator&apos;));</code></pre>
+
+<p>Det skapade objektet kan sedan interageras med för att koppla räknaren med kontextuell funktionalitet, precis som vi gjorde med de exporterade Geogebra-labbarna häromåret. Desmos exponerar nuvarande status i räknaren via <code>calculator.getState</code>. </p>
+
+<p>Prova att skriva in några olika uttryck i desmosräknaren ovan och tryck sedan på knappen &#8220;visa LaTeX&#8221; under. Den funktionaliteten implementerade jag genom att loopa igenom den exponerade datan (som finns i <code>getstateresult.expressions.list</code>):</p>
+
+<pre><code class="javascript">document.getElementById(&quot;latexbutton&quot;).addEventListener(&quot;click&quot;,function(e){
+  alert(_.reduce(calculator.getState().expressions.list,function(str,o,n){
+    return str + (n+1) + &quot;: &quot; + o.latex + &quot;\n&quot;;
+  },&quot;&quot;));
+});</code></pre>
+
+<p>På dylikt manér kan man implementera en historik, delningsfunktionalitet och koppling mot plattformen i övrigt.</p>
+
+<h4 id="symbolab">Symbolab</h4>
+
+<p>Möjligen skulle <a href="https://www.symbolab.com/">Symbolab</a> kunna vara intressanta att prata med. De har MathQuillinmatning, CAS-motor med förenkling steg för steg, samt grafritande. Med andra ord ligger de nära det du visualiserar.</p>
+
+<h4 id="math42">Math 42</h4>
+
+<p>De som bygger appen <a href="http://math-42.com/">Math 42</a> jobbar också på ett webbgränssnitt med samma funktionalitet. Tyvärr har jag skrivit på ett NDA så jag kan inte visa, men funktionaliteten motsvarar <a href="http://math-42.com/features/">appens</a>; smart inmatning, CAS och grafer. Sist jag pratade med dem så var fokus på att bygga en egen webbtjänst och inte att erbjuda ett bibliotek, men de sneglade även åt det hållet.</p>
+
+<h4 id="mathnotepad">Math Notepad</h4>
+
+<p>Ett projekt som jag sneglat lite på är <a href="http://mathnotepad.com/">Math Notepad</a>, som är ett grafiskt gränssnitt byggt på <a href="http://mathjs.org/">Math.js</a>. De använder inga hjälpmedel för vare sig indata eller rendering av matematik; användaren matar in &#8220;ren&#8221; text.</p>
+
+<p>Den har CAS-funktionalitet under motorhuven; om du matar in &#8220;i+2i&#8221; så förenklar den till &#8220;3i&#8221;. Tyvärr har de inte haft vett att exponera denna funktionalitet för variabler, så om du provar &#8220;x+2x&#8221; så protesterar den. Om du innan har definierat att &#8220;x=7&#8221;, så utvärderar den istället &#8220;x+2x&#8221; till 21.</p>
+
+<figure>
+<img src="mathnotepad.png" alt="halvCAS" />
+<figcaption>halvCAS</figcaption></figure>
+
+
+
+<p>Eftersom funktionaliteten finns under motorhuven så skulle det förmodligen gå att tillgängliggöra denna för variabler om man verkligen ville, men vid ett första ögonkast på koden så känns det inte helt trivialt.</p>
+
+<p>Projektet har annars en viss elegans, och det integrerande grafplottandet är snyggt! Men gränssnittet bygger på att man skriver in funktioner och matematik utan stöd, vilket förmodligen är en dealbreaker. </p>
+
+<p>Testa funktionaliteten i math.js-biblioteket i demoappen nedan:</p>
+
+<p><iframe src="math/index.html" height=300 width=800></iframe></p>
+
+
+
+</div></body></html>

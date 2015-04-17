@@ -5,11 +5,13 @@
   <title>Desmos demo</title>
   <script src="../lodash.js"></script>
   <script src="calculator.js"></script>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 </head>
 <body>
   <div id="calculator" style="width: 800px; height: 400px;"></div>
   <p></p>
-  <button id="latexbutton">Visa LaTeX</button>
+  <button id="fracbutton">Lägg till bråk</button>
+  <button id="latexbutton">Visa all LaTeX</button>
 
   <script>
     var calculator = Desmos.Calculator(document.getElementById('calculator'));
@@ -20,6 +22,12 @@
       alert(_.reduce(calculator.getState().expressions.list,function(str,o,n){
         return str + (n+1) + ": " + o.latex + "\n";
       },""));
+    });
+    document.getElementById("fracbutton").addEventListener("click",function(e){
+      calculator.setExpression({
+        id: Math.random(),
+        latex: "\\frac{"+(Math.floor(Math.random()*10))+"}{"+(2+Math.floor(Math.random()*10))+"}"
+      });
     });
   </script>
 
